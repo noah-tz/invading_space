@@ -1,4 +1,4 @@
-from class_game import *
+from class_game import Game
 
 
 

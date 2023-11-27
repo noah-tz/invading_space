@@ -1,12 +1,11 @@
-from setting import *
-from class_shots import Shot_ship
+import settings
 import pygame as pg
 
 
 class Ship(pg.sprite.Sprite):
     def __init__(self, x, y):
         super(__class__, self).__init__()
-        self.image = IMG_SHIP
+        self.image = settings.IMG_SHIP
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -21,3 +20,6 @@ class Ship(pg.sprite.Sprite):
     def los(self):
         if self.life > 0:
             self.life -= 1
+
+
+

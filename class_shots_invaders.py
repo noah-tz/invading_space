@@ -1,7 +1,5 @@
-from setting import *
 from class_shots import Shot_ship
 import random
-import pygame as pg
 
 
 class Shot_invaders(Shot_ship):
