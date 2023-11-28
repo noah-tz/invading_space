@@ -26,12 +26,12 @@ SCORE_SHOT = 1000
 SCORE_JOKER = 400
 SCORE_SHOT_SHIP = 1
 
-IMG_SHIP = pg.image.load('media/ship.bmp')
-IMG_INVADER_GREEN = pg.image.load('media/elian_green.png')
-IMG_INVADER_RED = pg.image.load('media/elian_red.png')
-IMG_SHOT = pg.image.load('media/shot.jpeg')
-IMG_JOKER = pg.image.load('media/joker.PNG')
-IMG_LIFE = pg.image.load('media/ship.bmp')
+IMG_SHIP = 'media/ship.bmp'
+IMG_INVADER_GREEN = 'media/elian_green.png'
+IMG_INVADER_RED = 'media/elian_red.png'
+IMG_SHOT = 'media/shot.jpeg'
+IMG_JOKER = 'media/joker.PNG'
+IMG_LIFE = 'media/ship.bmp'
 
 SPEED_MOVE_SHIP = 7
 SPEED_MOVE_INVADERS = 5
