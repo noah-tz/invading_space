@@ -15,7 +15,7 @@ class GameManager:
 	def __init__(self, level, life, score):
 		pg.init()
 		self._level: int = level
-		self._image: str = settings.IMG_GAME
+		self._image: str = pg.image.load(settings.IMG_GAME)
 		self._name: str = 'invaders space'
 		self._screen = pg.display.set_mode(settings.SIZE)
 		self._running = True
@@ -24,8 +24,8 @@ class GameManager:
 		self._life = life
 		self._score = score
 		self._stay = True
-		self._image_game_over = settings.IMG_GAME_OVER
-		self._image_you_winner = settings.IMG_YOU_WINNER
+		self._image_game_over = pg.image.load(settings.IMG_GAME_OVER)
+		self._image_you_winner = pg.image.load(settings.IMG_YOU_WINNER)
 		self._ship = Ship((settings.WIDTH - 100) // 2, int(settings.HEIGHT * 0.8))
 
 	def background_music(self):
@@ -123,7 +123,7 @@ class GameManager:
 			else:
 				self._running = False
 
-	def blit_object(self):
+	def blit(self):
 		self._screen.blit(self._image, (0, 0))
 		self.jokers.draw(self._screen)
 		self.invaders_group.draw(self._screen)
@@ -146,7 +146,7 @@ class GameManager:
 			self.collide()
 			self.events()
 			self.move_objects()
-			self.blit_object()
+			self.blit()
 			self._clock.tick(settings.REFRESH_RATE)
 
 	def run(self):
@@ -188,15 +188,3 @@ class GameManager:
 				self.text(40, (settings.HEIGHT * 0.7, settings.WIDTH * 0.1), f"press key-down for play again")
 			pg.display.flip()
 			self._clock.tick(5)
-
-
-
-
-
-
-
-
-
-# class Game
-
-

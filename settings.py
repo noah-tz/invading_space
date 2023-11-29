@@ -1,5 +1,3 @@
-import pygame as pg
-
 LIFE = 3
 
 BLACK = (0, 0, 0)
@@ -48,18 +46,18 @@ mef = True
 if mef:
     WIDTH, HEIGHT = 1600, 1158
     #WIDTH_PROTECTOR =
-    IMG_GAME = pg.image.load('media/img_game_mef.jpg')
-    IMG_GAME_OVER = pg.image.load('media/img_over_mef.jpg')
-    IMG_YOU_WINNER = pg.image.load('media/img_win_mef.png')
+    IMG_GAME = 'media/img_game_mef.jpg'
+    IMG_GAME_OVER = 'media/img_over_mef.jpg'
+    IMG_YOU_WINNER = 'media/img_win_mef.png'
     ROWS_INVADERS = 4
     COLS_INVADERS = 10
     LOCATION_TEXT_GAME_Y = 0.6
     LOCATION_TEXT_GAME_X = 0.2
 else:
     WIDTH, HEIGHT = 960, 660
-    IMG_GAME = pg.image.load('media/img_game_home.jpeg')
-    IMG_GAME_OVER = pg.image.load('media/img_over_home.jpg')
-    IMG_YOU_WINNER = pg.image.load('media/img_win_home.png')
+    IMG_GAME = 'media/img_game_home.jpeg'
+    IMG_GAME_OVER = 'media/img_over_home.jpg'
+    IMG_YOU_WINNER = 'media/img_win_home.png'
     ROWS_INVADERS = 3
     COLS_INVADERS = 6
     LOCATION_TEXT_GAME_Y = 0.65
