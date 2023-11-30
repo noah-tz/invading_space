@@ -49,11 +49,10 @@ class GameManager:
 			if event.type == pg.QUIT:
 				self._running = False
 				self._stay = False
-			if event.type == pg.KEYDOWN:
-				if event.key == pg.K_SPACE:
-					self.shot_sound()
-					self.shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2), self._ship.rect.y))
-					self._score -= 1
+			if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+				self.shot_sound()
+				self.shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2), self._ship.rect.y))
+				self._score -= 1
 		keys = pg.key.get_pressed()
 		if keys[pg.K_LEFT] and self._ship.rect.x > 10:
 			self._ship.update(- settings.SPEED_MOVE_SHIP)
@@ -99,20 +98,17 @@ class GameManager:
 		collide_ship_invaders = pg.sprite.spritecollide(self._ship, self.invaders_group, False)
 		pg.sprite.groupcollide(self.shots_ship, self.shots_invaders, True, True)
 		pg.sprite.groupcollide(self.shots_ship, self.jokers, True, True)
-		for i in self.invaders_group.sprites():
-			if pg.sprite.spritecollide(i, self.shots_ship, True):
-				if i.life > 0:
-					i.life -= 1
-					i.image = pg.image.load(settings.IMG_INVADER_RED)
+		for invader in self.invaders_group.sprites():
+			if pg.sprite.spritecollide(invader, self.shots_ship, True):
+				if invader.life > 0:
+					invader.life -= 1
+					invader.image = pg.image.load(settings.IMG_INVADER_RED)
 					self._score += 100
 				else:
-					self.invaders_group.remove(i)
+					self.invaders_group.remove(invader)
 		for i in self.protectors.sprites():
 			if pg.sprite.spritecollide(i, self.shots_invaders, True):
-				if i.life > 0:
-					i.life -= 1
-					i.image.fill(settings.RED)
-				else:
+				if not i.collision():
 					self.protectors.remove(i)
 		if len(collide_ship_invaders) > 0:
 			self._running = False
@@ -160,15 +156,12 @@ class GameManager:
 			if not len(self.invaders_group) > 0:
 				self._screen.blit(self._image_you_winner, (0, 0))
 				for event in pg.event.get():
-					try:
-						if event.type == pg.QUIT:
-							self._stay = False
-						if event.key == pg.K_DOWN:
-							game = GameManager(self._level + 1, self._life + 1, self._score)
-							self._stay = False
-							game.run()
-					except:
-						a = 1
+					if event.type == pg.QUIT:
+						self._stay = False
+					if event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
+						game = GameManager(self._level + 1, self._life + 1, self._score)
+						self._stay = False
+						game.run()
 				self.text(40, (settings.HEIGHT * 0.7, settings.WIDTH * 0.6), f"your score is {self._score}")
 				self.text(40, (settings.HEIGHT * 0.7, settings.WIDTH * 0.1), f"press key-down for up level")
 			else:

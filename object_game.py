@@ -75,7 +75,7 @@ class Protector(Object):
     def __init__(self, x):
         super().__init__(x, settings.HEIGHT * 0.75)
         self.image.fill(settings.GREEN)
-        self.life = 1
+        self._life = 1
 
     def creat_group(self, level):
         protectors_list = pg.sprite.Group()
@@ -86,10 +86,10 @@ class Protector(Object):
             protectors_list.add(protector)
         return protectors_list
 
-
-
-    def life_protector(self):
-        self.life -= 1
+    def collision(self):
+        self.image.fill(settings.RED)
+        self._life -= 1
+        return self._life +1
 
 
 

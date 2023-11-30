@@ -19,6 +19,8 @@ REFRESH_RATE = 60
 SOUND_GAME = 'media/music.wav'
 SOUND_SHOT = 'media/sound_shot_1.wav' # sound_shot_1.wav
 
+FONT = 'freesansbold.ttf'
+
 SCORE_INVADER = 100
 SCORE_SHOT = 1000
 SCORE_JOKER = 400
