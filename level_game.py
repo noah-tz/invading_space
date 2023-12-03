@@ -1,5 +1,6 @@
 from window import Window
 import settings
+from screen import Screen
 
 from object_game_copy import(
     Ship,
@@ -12,6 +13,7 @@ from object_game_copy import(
 
 import pygame as pg
 import random
+from typing import Type
 
 
 
@@ -21,9 +23,11 @@ class LevelGame(Window):
     def __init__(self, level: int, life: int, score: int = 0) -> None:
         self._level = level
         self._life = life
-        super().__init__(f"level {self._level}", settings.IMG_GAME, score)
+        super().__init__(score)
+        self._image_path = settings.IMG_GAME
+        self._title = f"level {self._level}"
         self._tik = settings.REFRESH_RATE
-        self._create_objects()
+        self._initial_objects()
 
     def _initial_text(self):
         txt_data = [
@@ -34,12 +38,11 @@ class LevelGame(Window):
             settings.WHITE,
             25,
             (settings.HEIGHT * settings.LOCATION_TEXT_GAME_X, settings.WIDTH * settings.LOCATION_TEXT_GAME_Y),
-            0
         ]
         self._text = [txt_data]
 
-    def _create_objects(self):
-            self._protectors = pg.sprite.Group(Protector(((settings.WIDTH - 205) / (4 - (self._level // 2))) * protector) for protector in range(1, 4 - (self._level // 2) + 1)) # Protector.creat_group(self, self._level)
+    def _initial_objects(self):
+            self._protectors = pg.sprite.Group(Protector(((settings.WIDTH - 205) / (4 - (self._level // 2))) * protector) for protector in range(4 - (self._level // 2) + 1)) # Protector.creat_group(self, self._level)
             self._invaders = pg.sprite.Group(Invader(col * 120, row * 100) for row in range(self._level) for col in range(settings.COLS_INVADERS))
             self._shots_ship = pg.sprite.Group()
             self._shots_invaders = pg.sprite.Group()
@@ -50,10 +53,10 @@ class LevelGame(Window):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self._running = False
-                self._stay = False
+                self._quit = True
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 self._shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2), self._ship.rect.y))
-                self._score -= 1
+                self._score = max(self._score -1 ,0)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] and self._ship.rect.x > 10:
             self._ship.update(- settings.SPEED_MOVE_SHIP)
@@ -93,23 +96,24 @@ class LevelGame(Window):
         if create_joker == settings.PULSE_CREATE_JOKER:
             self._jokers.add(Joker(self._level))
 
-    def _blit_objects(self):
-        self._screen.blit(
+    def _blit_objects(self, screen: Type[Screen]):
+        screen.blit(
             (
                 self._jokers,
                 self._shots_invaders,
                 self._protectors,
                 self._shots_ship,
                 self._invaders,
-            ),
-            (self._ship,)
+            )
         )
+        self._text_to_screen(screen)
+        screen.blit(objects=(self._ship,), blit_image=False)
 
     def _collide(self):
         if pg.sprite.spritecollide(self._ship, self._shots_invaders, True):
             if self._life > 0:
                 self._life -= 1
-                self._score -= 100
+                self._score = (max(self._score -100, 0))
             else:
                 self._running = False
                 self._continue = False
@@ -127,19 +131,22 @@ class LevelGame(Window):
             if pg.sprite.spritecollide(protector, self._shots_invaders, True) and not protector.collision():
                 self._protectors.remove(protector)
 
-    def _loop_game(self) -> False:
+    def _loop_game(self, screen: Type[Screen]) -> False:
         while self._running and len(self._invaders):
             self._dynamic_text()
             self._handle_event()
-            self._screen.blit()
+            screen.blit()
             self._dynamic_text()
-            self._blit_objects()
-            self._text_to_screen()
+            self._blit_objects(screen)
             pg.display.flip()
             self._clock.tick(self._tik)
             self._move_objects()
             self._create_random_objects()
             self._collide()
+
+
+
+
 
     
 

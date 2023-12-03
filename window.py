@@ -1,14 +1,14 @@
-import settings
 from screen import Screen
+from typing import Type
 
 import pygame as pg
 
 class Window:
-    def __init__(self, name: str, image_path: str, score: int = 0) -> None:
-        self._screen = Screen(name, image_path)
+    def __init__(self, score: int = 0) -> None:
         self._score = score
         self._running = True
         self._continue = True
+        self._quit = False
         self._clock = pg.time.Clock()
         self._initial_text()
         # for initial in subclass
@@ -16,42 +16,44 @@ class Window:
         self._tik: int
         self._level: int
         self._life: int
+        self._image_path: str
+        self._title: str
 
     def _initial_text(self):
         raise NotImplementedError
 
-    def _text_to_screen(self):
-        for font, text, antialias, color, background, size, local, from_level in self._text:
-            if self._level >= from_level:
-                self._screen.blit_text(
-                    font,
-                    text,
-                    antialias,
-                    color,
-                    background,
-                    size,
-                    local
-                )
+    def _text_to_screen(self, screen: Type[Screen]):
+        for font, text, antialias, color, background, size, local in self._text:
+            screen.blit_text(
+                font,
+                text,
+                antialias,
+                color,
+                background,
+                size,
+                local
+            )
     
     def _handle_event(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self._running = False
-                self._continue = False
+                self._quit = True
             if event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 self._running = False
     
-    def _loop_game(self) -> False:
+    def _loop_game(self, screen: Type[Screen]) -> False:
         while self._running:
             self._handle_event()
-            self._screen.blit()
-            self._text_to_screen()
+            screen.blit()
+            self._text_to_screen(screen)
             pg.display.flip()
             self._clock.tick(self._tik)
     
-    def run(self) -> bool:
-        self._loop_game()
-        return self._continue, self._life, self._level, self._score
+    def run(self, screen: Type[Screen]) -> bool:
+        screen.replace_window(self._image_path, self._title)
+        self._loop_game(screen)
+        return self._continue, self._quit, self._life, self._level, self._score
 
 
     
