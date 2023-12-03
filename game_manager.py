@@ -39,6 +39,8 @@ class GameManager:
         if not quit:
             self.run()
 
+    # def _is_highlight()
+
 
 if __name__ == '__main__':
     game = GameManager()

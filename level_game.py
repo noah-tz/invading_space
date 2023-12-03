@@ -10,7 +10,6 @@ from object_game_copy import(
     Joker,
     Protector
 )
-
 import pygame as pg
 import random
 from typing import Type
