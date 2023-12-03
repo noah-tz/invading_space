@@ -1,5 +1,5 @@
 import settings
-from object_game import (
+from object_game_copy import (
 	Ship,
 	Invader,
 	ShotShip,
@@ -32,10 +32,6 @@ class GameManager:
 		explosion_sound = pg.mixer.Sound(settings.SOUND_GAME)
 		pg.mixer.Sound.play(explosion_sound)
 
-	def shot_sound(self):
-		pg.mixer.init()
-		pg.mixer.music.load(settings.SOUND_SHOT)
-		pg.mixer.music.play()
 
 	def text(self, size, vec, txt):
 		font = pg.font.Font('freesansbold.ttf', size)
@@ -50,7 +46,6 @@ class GameManager:
 				self._running = False
 				self._stay = False
 			if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-				self.shot_sound()
 				self.shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2), self._ship.rect.y))
 				self._score -= 1
 		keys = pg.key.get_pressed()
@@ -61,7 +56,7 @@ class GameManager:
 
 	def move_objects(self):
 		self.move_automatic_object()
-		self.move_invaders(self.invaders_group.sprites())
+		self.move_invaders()
 		self.shot_invaders()
 
 	def move_automatic_object(self):
@@ -69,20 +64,20 @@ class GameManager:
 		self.shots_invaders.update(self._level)
 		self.jokers.update()
 
-	def move_invaders(self, invaders):
+	def move_invaders(self):
 		if len(self.invaders_group) > 0:
-			x_max = max([i.rect.x for i in invaders])
-			x_min = min([i.rect.x for i in invaders])
-			if (x_min <= 0) and (self._revers == True):
-				self.invaders_group.update(0, self._level * 0.2 + settings.SPEED_DOWN_INVADERS)
-				self._revers = False
-			if (x_max >= (settings.HEIGHT * 1.28)) and (self._revers == False):
-				self._revers = True
-				self.invaders_group.update(0, self._level * 0.2 + settings.SPEED_DOWN_INVADERS)
-			if self._revers:
-				self.invaders_group.update(- settings.SPEED_MOVE_INVADERS, 0)
-			else:
-				self.invaders_group.update(settings.SPEED_MOVE_INVADERS, 0)
+			add_y = False
+			for invader in self.invaders_group.sprites():
+				if invader.is_over_left():
+					add_y = True
+					Invader.direction = 1
+				elif invader.is_over_right():
+					add_y = True
+					Invader.direction = -1
+			if add_y:
+				for invader in self.invaders_group.sprites():
+					invader.add_y(self._level)							
+			self.invaders_group.update()
 
 	def shot_invaders(self):
 		shot = random.randint(0, settings.PULSE_SHOTS_INVADERS + int(self._level * 0.1 + 1))
@@ -94,30 +89,27 @@ class GameManager:
 			self.jokers.add(Joker(self._level))
 
 	def collide(self):
-		collide_ship_shots = pg.sprite.spritecollide(self._ship, self.shots_invaders, True)
-		collide_ship_invaders = pg.sprite.spritecollide(self._ship, self.invaders_group, False)
-		pg.sprite.groupcollide(self.shots_ship, self.shots_invaders, True, True)
-		pg.sprite.groupcollide(self.shots_ship, self.jokers, True, True)
-		for invader in self.invaders_group.sprites():
-			if pg.sprite.spritecollide(invader, self.shots_ship, True):
-				if invader.life > 0:
-					invader.life -= 1
-					invader.image = pg.image.load(settings.IMG_INVADER_RED)
-					self._score += 100
-				else:
-					self.invaders_group.remove(invader)
-		for i in self.protectors.sprites():
-			if pg.sprite.spritecollide(i, self.shots_invaders, True):
-				if not i.collision():
-					self.protectors.remove(i)
-		if len(collide_ship_invaders) > 0:
-			self._running = False
-		if len(collide_ship_shots) > 0:
+		if pg.sprite.spritecollide(self._ship, self.shots_invaders, True):
 			if self._life > 0:
 				self._life -= 1
 				self._score -= 100
 			else:
 				self._running = False
+				self._continue = False
+		if pg.sprite.spritecollide(self._ship, self.invaders_group, False):
+			self._running = False
+			self._continue = False
+		pg.sprite.groupcollide(self.shots_ship, self.shots_invaders, True, True)
+		pg.sprite.groupcollide(self.shots_ship, self.jokers, True, True)
+		for invader in self.invaders_group.sprites():
+			if pg.sprite.spritecollide(invader, self.shots_ship, True):
+				if not invader.collision():
+					self.invaders_group.remove(invader)
+				self._score += 100
+		for protector in self.protectors.sprites():
+			if pg.sprite.spritecollide(protector, self.shots_invaders, True) and not protector.collision():
+				self.protectors.remove(protector)
+
 
 	def blit(self):
 		self._screen.blit(self._image, (0, 0))
@@ -131,8 +123,8 @@ class GameManager:
 		pg.display.flip()
 
 	def create_objects(self):
-		self.protectors = Protector.creat_group(self, self._level)
-		self.invaders_group = Invader.creat_group(self, min(self._level, 9))
+		self.protectors = pg.sprite.Group(Protector(((settings.WIDTH - 205) / (4 - (self._level // 2))) * protector) for protector in range(1, 4 - (self._level // 2) + 1)) # Protector.creat_group(self, self._level)
+		self.invaders_group = pg.sprite.Group(Invader(col * 120, row * 100) for row in range(self._level) for col in range(settings.COLS_INVADERS))
 		self.shots_ship = pg.sprite.Group()
 		self.shots_invaders = pg.sprite.Group()
 		self.jokers = pg.sprite.Group()

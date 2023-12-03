@@ -35,31 +35,10 @@ class Invader(Object):
     def update(self):
         self.rect.x += settings.SPEED_MOVE_INVADERS * Invader.direction
 
-
-    def creat_group(self, rows):
-        Invader.rows_invaders = rows
-        Invader.number_invaders = 0
-        invaders_list = pg.sprite.Group()
-        for i in range(settings.COLS_INVADERS):
-            for u in range(rows):
-                invader = Invader(i * 120, u * 100)
-                invaders_list.add(invader)
-        return invaders_list
-
-        
-
-
-class ShotShip(Object):
-    def __init__(self, x, y):
-        super().__init__(x, y, settings.IMG_SHOT)
-
-    def shot_sound(self):
-        pg.mixer.init()
-        pg.mixer.music.load(settings.SOUND_SHOT)
-        pg.mixer.music.play()
-
-    def update(self):
-        self.rect.y -= settings.SPEED_SHOT_SHIP
+    def collision(self):
+        self.image = pg.image.load(settings.IMG_INVADER_RED)
+        self.life -= 1
+        return self.life +1
 
 
 class ShotInvader(Object):
@@ -69,6 +48,20 @@ class ShotInvader(Object):
 
     def update(self, level):
         self.rect.y += self.speed * (1 + (level * 0.05))
+
+
+class ShotShip(ShotInvader):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self._sound()
+
+    def _sound(self):
+        pg.mixer.init()
+        pg.mixer.music.load(settings.SOUND_SHOT)
+        pg.mixer.music.play()
+
+    def update(self):
+        self.rect.y -= settings.SPEED_SHOT_SHIP
 
 
 class Joker(Object):
@@ -87,19 +80,12 @@ class Protector(Object):
         self.image.fill(settings.GREEN)
         self._life = 1
 
-    def creat_group(self, level):
-        protectors_list = pg.sprite.Group()
-        protector = Protector(10)
-        protectors_list.add(protector)
-        for i in range(1, 4 - (level // 2) + 1):
-            protector = Protector(((settings.WIDTH - 205) / (4 - (level // 2))) * i)
-            protectors_list.add(protector)
-        return protectors_list
-
     def collision(self):
         self.image.fill(settings.RED)
         self._life -= 1
         return self._life +1
+    
+
 
 
 
