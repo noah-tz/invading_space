@@ -1,22 +1,28 @@
 from window import Window
 import settings
-
 import pygame as pg
-
-
-
-
 
 class PreGame(Window):
     def __init__(self, level: int, score: int = 0, life: int = 3) -> None:
+        """
+        Initialize the PreGame window.
+
+        Parameters:
+        - level (int): The level of the game.
+        - score (int): The current score of the player.
+        - life (int): The remaining life of the player.
+        """
         self._level = level
         self._life = life
         super().__init__(score)
         self._image_path: str = settings.IMG_GAME
-        self._title =  f"level {self._level}"
+        self._title = f"level {self._level}"
         self._tik = 5
 
     def _initial_text(self) -> None:
+        """
+        Set the initial text for the PreGame window.
+        """
         txt_win = [
             settings.FONT,
             "You Win" if self._level > 1 else "Welcome",
@@ -28,7 +34,7 @@ class PreGame(Window):
         ]
         txt_data = [
             settings.FONT,
-            f"your score is {self._score}, your life is {self._life}. level: {self._level }",
+            f"your score is {self._score}, your life is {self._life}. level: {self._level}",
             False,
             settings.RED,
             settings.WHITE,
@@ -43,15 +49,9 @@ class PreGame(Window):
             settings.RED,
             settings.WHITE,
             37,
-            (settings.HEIGHT * settings.LOCATION_TEXT_GAME_X +80, settings.WIDTH * settings.LOCATION_TEXT_GAME_Y -50),
+            (settings.HEIGHT * settings.LOCATION_TEXT_GAME_X + 80, settings.WIDTH * settings.LOCATION_TEXT_GAME_Y - 50),
         ]
         self._text = [txt_win, txt_data, txt_instructions]
-    
-
-
-        
-
-
 
 if __name__ == '__main__':
     p = PreGame(2)

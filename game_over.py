@@ -1,14 +1,16 @@
 from window import Window
 import settings
-
 import pygame as pg
-
-
-
-
 
 class GameOver(Window):
     def __init__(self, score: int = 0, is_game_record: bool = False) -> None:
+        """
+        Initialize the Game Over window.
+
+        Parameters:
+        - score (int): The final score of the player.
+        - is_game_record (bool): True if the score is a new game record, False otherwise.
+        """
         self._is_game_record = is_game_record
         self._level = 1
         self._life = 0
@@ -18,8 +20,10 @@ class GameOver(Window):
         self._life = 0
         self._tik = 5
 
-
     def _initial_text(self) -> None:
+        """
+        Set the initial text for the Game Over window.
+        """
         txt_highlight = [
             settings.FONT,
             f"New game record! {self._score} points" if self._is_game_record else "",
@@ -31,7 +35,7 @@ class GameOver(Window):
         ]
         txt_data = [
             settings.FONT,
-            "press key-down for play again",
+            "press key-down to play again",
             False,
             settings.RED,
             settings.WHITE,
@@ -47,13 +51,7 @@ class GameOver(Window):
             40,
             (settings.HEIGHT * 0.7, settings.WIDTH * 0.55),
         ]
-        self._text = [txt_highlight ,txt_data, txt_instructions]
-    
-
-
-        
-
-
+        self._text = [txt_highlight, txt_data, txt_instructions]
 
 if __name__ == '__main__':
     p = GameOver(5000, 0)
