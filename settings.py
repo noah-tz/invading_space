@@ -21,6 +21,8 @@ SOUND_SHOT = 'media/sound_shot_1.wav' # sound_shot_1.wav
 
 FONT = 'freesansbold.ttf'
 
+GAME_RECORD_PATH = 'highlight.txt'
+
 SCORE_INVADER = 100
 SCORE_SHOT = 1000
 SCORE_JOKER = 400
@@ -40,29 +42,24 @@ SPEED_SHOT_SHIP = 20
 PULSE_SHOTS_INVADERS = 70
 PULSE_CREATE_JOKER = 300
 
+MAX_LEVEL_ADD = 7
+MIN_PROTECTORS = 3
+
+
 WIDTH_SHIP, HEIGHT_SHIP = 57, 99
 WIDTH_INVADER, HEIGHT_INVADER = 113, 57
 WIDTH_SHOT, HEIGHT_SHOT = 5, 26
 
-mef = True
-if mef:
-    WIDTH, HEIGHT = 1600, 1158
-    #WIDTH_PROTECTOR =
-    IMG_GAME = 'media/img_game_mef.jpg'
-    IMG_GAME_OVER = 'media/img_over_mef.jpg'
-    IMG_YOU_WINNER = 'media/img_win_mef.png'
-    ROWS_INVADERS = 4
-    COLS_INVADERS = 10
-    LOCATION_TEXT_GAME_Y = 0.6
-    LOCATION_TEXT_GAME_X = 0.2
-else:
-    WIDTH, HEIGHT = 960, 660
-    IMG_GAME = 'media/img_game_home.jpeg'
-    IMG_GAME_OVER = 'media/img_over_home.jpg'
-    IMG_YOU_WINNER = 'media/img_win_home.png'
-    ROWS_INVADERS = 3
-    COLS_INVADERS = 6
-    LOCATION_TEXT_GAME_Y = 0.65
-    LOCATION_TEXT_GAME_X = 0.3
+WIDTH, HEIGHT = 1600, 1158
+#WIDTH_PROTECTOR =
+IMG_GAME = 'media/img_game_mef.jpg'
+IMG_GAME_OVER = 'media/img_over_mef.jpg'
+IMG_YOU_WINNER = 'media/img_win_mef.png'
+ROWS_INVADERS = 4
+COLS_INVADERS = 10
+LOCATION_TEXT_GAME_Y = 0.6
+LOCATION_TEXT_GAME_X = 0.23
+
 
 SIZE = (WIDTH, HEIGHT)
+LOCATION_Y_SHIP = int(HEIGHT * 0.8)

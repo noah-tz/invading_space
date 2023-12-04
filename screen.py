@@ -14,7 +14,7 @@ class Screen:
         pg.font.init()
 
 
-    def blit(self, groups: tuple[pg.sprite.Group] = (), objects: tuple[Type[Object]] = (), blit_image: bool = True):
+    def blit(self, groups: tuple[pg.sprite.Group] = (), objects: tuple[Type[Object]] = (), blit_image: bool = True) -> None:
         if blit_image:
             self._screen.blit(self._image, (0, 0))
         for group in groups:
@@ -23,14 +23,14 @@ class Screen:
             self._screen.blit(object.image, object.rect.topleft)
 
 
-    def blit_text(self, font, txt, antialias: bool, color, background, size, vec):
+    def blit_text(self, font :str, txt: str, antialias: bool, color: tuple[int], background: tuple[int], size: int, vec: tuple[float]) -> None:
         font = pg.font.Font(font, size)
         text = font.render(txt, antialias, color, background)
         textRect = text.get_rect()
         textRect.center = vec
         self._screen.blit(text, textRect)
 
-    def replace_window(self, image_path, name):
+    def replace_window(self, image_path: str, name: str) -> None:
         self._image = pg.image.load(image_path)
         pg.display.set_caption(name)
 

@@ -3,7 +3,7 @@ import settings
 import random
 
 class Object(pg.sprite.Sprite):
-    def __init__(self, x, y, image_path = None) -> None:
+    def __init__(self, x: float, y: float, image_path: str = None) -> None:
         super(__class__, self).__init__()
         self.image = pg.image.load(image_path) if image_path else pg.Surface((200, 5))
         self.rect = self.image.get_rect()
@@ -11,95 +11,81 @@ class Object(pg.sprite.Sprite):
         self.rect.y = y
 
 class Ship(Object):
-    def __init__(self, x, y):
-        super().__init__(x, y, settings.IMG_SHIP)
+    def __init__(self, x: float) -> None:
+        super().__init__(x, settings.LOCATION_Y_SHIP, settings.IMG_SHIP)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
             self.rect.x += x
 
 class Invader(Object):
     direction = 1
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float) -> None:
         super().__init__(x, y, settings.IMG_INVADER_GREEN)
         self.life = 1
 
-    def is_over_left(self):
+    def is_over_left(self) -> bool:
         return (self.rect.x <= 0) and (Invader.direction == -1)
     
-    def is_over_right(self):
+    def is_over_right(self) -> bool:
         return (self.rect.x >= (settings.HEIGHT * 1.28)) and (Invader.direction == 1)
 
-    def add_y(self, level):
-        self.rect.y += level * 0.1 + settings.SPEED_DOWN_INVADERS
+    def add_y(self, level: int) -> None:
+        self.rect.y += min(settings.MAX_LEVEL_ADD, level) * 0.1 + settings.SPEED_DOWN_INVADERS
 
-    def update(self):
+    def update(self) -> None:
         self.rect.x += settings.SPEED_MOVE_INVADERS * Invader.direction
 
-
-    def creat_group(self, rows):
-        Invader.rows_invaders = rows
-        Invader.number_invaders = 0
-        invaders_list = pg.sprite.Group()
-        for i in range(settings.COLS_INVADERS):
-            for u in range(rows):
-                invader = Invader(i * 120, u * 100)
-                invaders_list.add(invader)
-        return invaders_list
-
-        
+    def collision(self) -> int:
+        self.image = pg.image.load(settings.IMG_INVADER_RED)
+        self.life -= 1
+        return self.life +1
 
 
-class ShotShip(Object):
-    def __init__(self, x, y):
+class ShotInvader(Object):
+    def __init__(self, x: float, y: float) -> None:
         super().__init__(x, y, settings.IMG_SHOT)
+        self.speed = random.randint(3, 5)
 
-    def shot_sound(self):
+    def update(self, level: int) -> None:
+        self.rect.y += self.speed * (1 + min(settings.MAX_LEVEL_ADD, level) * 0.05)
+
+
+class ShotShip(ShotInvader):
+    def __init__(self, x: float) -> None:
+        super().__init__(x, settings.LOCATION_Y_SHIP)
+        self._sound()
+
+    def _sound(self) -> None:
         pg.mixer.init()
         pg.mixer.music.load(settings.SOUND_SHOT)
         pg.mixer.music.play()
 
-    def update(self):
+    def update(self) -> None:
         self.rect.y -= settings.SPEED_SHOT_SHIP
 
 
-class ShotInvader(Object):
-    def __init__(self, x, y):
-        super().__init__(x, y, settings.IMG_SHOT)
-        self.speed = random.randint(3, 5)
-
-    def update(self, level):
-        self.rect.y += self.speed * (1 + (level * 0.05))
-
-
 class Joker(Object):
-    def __init__(self, level):
+    def __init__(self, level: int) -> None:
         super().__init__(settings.WIDTH, settings.HEIGHT * 0.1, settings.IMG_JOKER)
         self.speed = random.randint(2, level + 3)
         self.level = level
 
-    def update(self):
-        self.rect.x -= self.speed + (self.level * 0.3)
+    def update(self) -> None:
+        self.rect.x -= self.speed + min(settings.MAX_LEVEL_ADD, self.level) * 0.3
 
 
 class Protector(Object):
-    def __init__(self, x):
+    def __init__(self, x: int) -> None:
         super().__init__(x, settings.HEIGHT * 0.75)
         self.image.fill(settings.GREEN)
         self._life = 1
 
-    def creat_group(self, level):
-        protectors_list = pg.sprite.Group()
-        protector = Protector(10)
-        protectors_list.add(protector)
-        for i in range(1, 4 - (level // 2) + 1):
-            protector = Protector(((settings.WIDTH - 205) / (4 - (level // 2))) * i)
-            protectors_list.add(protector)
-        return protectors_list
-
-    def collision(self):
+    def collision(self) -> int:
         self.image.fill(settings.RED)
         self._life -= 1
         return self._life +1
+    
+
 
 
 

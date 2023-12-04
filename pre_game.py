@@ -8,15 +8,15 @@ import pygame as pg
 
 
 class PreGame(Window):
-    def __init__(self, level: int, score = 0, life: int = 3) -> None:
+    def __init__(self, level: int, score: int = 0, life: int = 3) -> None:
         self._level = level
         self._life = life
         super().__init__(score)
-        self._image_path = settings.IMG_GAME
+        self._image_path: str = settings.IMG_GAME
         self._title =  f"level {self._level}"
         self._tik = 5
 
-    def _initial_text(self):
+    def _initial_text(self) -> None:
         txt_win = [
             settings.FONT,
             "You Win" if self._level > 1 else "Welcome",

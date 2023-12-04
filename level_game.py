@@ -2,7 +2,7 @@ from window import Window
 import settings
 from screen import Screen
 
-from object_game_copy import(
+from object_game import(
     Ship,
     Invader,
     ShotShip,
@@ -23,12 +23,12 @@ class LevelGame(Window):
         self._level = level
         self._life = life
         super().__init__(score)
-        self._image_path = settings.IMG_GAME
+        self._image_path: str = settings.IMG_GAME
         self._title = f"level {self._level}"
-        self._tik = settings.REFRESH_RATE
+        self._tik: int = settings.REFRESH_RATE
         self._initial_objects()
 
-    def _initial_text(self):
+    def _initial_text(self) -> None:
         txt_data = [
             settings.FONT,
             "",
@@ -40,21 +40,21 @@ class LevelGame(Window):
         ]
         self._text = [txt_data]
 
-    def _initial_objects(self):
-            self._protectors = pg.sprite.Group(Protector(((settings.WIDTH - 205) / (4 - (self._level // 2))) * protector) for protector in range(4 - (self._level // 2) + 1)) # Protector.creat_group(self, self._level)
-            self._invaders = pg.sprite.Group(Invader(col * 120, row * 100) for row in range(self._level) for col in range(settings.COLS_INVADERS))
+    def _initial_objects(self) -> None:
+            self._protectors = pg.sprite.Group(Protector(((settings.WIDTH - 205) / max(settings.MIN_PROTECTORS -1, (4 - (self._level // 2)))) * protector) for protector in range(max(settings.MIN_PROTECTORS -1, 4 - (self._level // 2)) +1))
+            self._invaders = pg.sprite.Group(Invader(col * 120, row * 100) for row in range(min(settings.MAX_LEVEL_ADD ,self._level)) for col in range(settings.COLS_INVADERS))
             self._shots_ship = pg.sprite.Group()
             self._shots_invaders = pg.sprite.Group()
             self._jokers = pg.sprite.Group()
-            self._ship = Ship((settings.WIDTH - 100) // 2, int(settings.HEIGHT * 0.8))
+            self._ship = Ship((settings.WIDTH - 100) // 2)
 
-    def _handle_event(self):
+    def _handle_event(self) -> None:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self._running = False
                 self._quit = True
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                self._shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2), self._ship.rect.y))
+                self._shots_ship.add(ShotShip(self._ship.rect.x + (settings.WIDTH_SHIP / 2) - (settings.WIDTH_SHOT / 2)))
                 self._score = max(self._score -1 ,0)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] and self._ship.rect.x > 10:
@@ -62,10 +62,10 @@ class LevelGame(Window):
         elif keys[pg.K_RIGHT] and self._ship.rect.x < (settings.WIDTH - 57):
             self._ship.update(settings.SPEED_MOVE_SHIP)
 
-    def _dynamic_text(self):
+    def _dynamic_text(self) -> None:
         self._text[0][1] = f"your score is {self._score}, your life is {self._life}. level: {self._level }"
 
-    def _move_invaders(self):
+    def _move_invaders(self) -> None:
         if len(self._invaders) > 0:
             add_y = False
             for invader in self._invaders.sprites():
@@ -80,13 +80,13 @@ class LevelGame(Window):
                     invader.add_y(self._level)							
             self._invaders.update()
 
-    def _move_objects(self):
+    def _move_objects(self) -> None:
         self._shots_ship.update()
         self._shots_invaders.update(self._level)
         self._jokers.update()
         self._move_invaders()
 
-    def _create_random_objects(self):
+    def _create_random_objects(self) -> None:
         shot = random.randint(0, settings.PULSE_SHOTS_INVADERS + int(self._level * 0.1 + 1))
         create_joker = random.randint(0, settings.PULSE_CREATE_JOKER)
         if shot == settings.PULSE_SHOTS_INVADERS and len(self._invaders.sprites()):
@@ -95,7 +95,7 @@ class LevelGame(Window):
         if create_joker == settings.PULSE_CREATE_JOKER:
             self._jokers.add(Joker(self._level))
 
-    def _blit_objects(self, screen: Type[Screen]):
+    def _blit_objects(self, screen: Type[Screen]) -> None:
         screen.blit(
             (
                 self._jokers,
@@ -108,7 +108,7 @@ class LevelGame(Window):
         self._text_to_screen(screen)
         screen.blit(objects=(self._ship,), blit_image=False)
 
-    def _collide(self):
+    def _collide(self) -> None:
         if pg.sprite.spritecollide(self._ship, self._shots_invaders, True):
             if self._life > 0:
                 self._life -= 1
@@ -126,11 +126,14 @@ class LevelGame(Window):
                 if not invader.collision():
                     self._invaders.remove(invader)
                 self._score += 100
+            if invader.rect.y >= self._ship.rect.y:
+                self._running = False
+                self._continue = False
         for protector in self._protectors.sprites():
             if pg.sprite.spritecollide(protector, self._shots_invaders, True) and not protector.collision():
                 self._protectors.remove(protector)
 
-    def _loop_game(self, screen: Type[Screen]) -> False:
+    def _loop_game(self, screen: Type[Screen]) -> None:
         while self._running and len(self._invaders):
             self._dynamic_text()
             self._handle_event()
